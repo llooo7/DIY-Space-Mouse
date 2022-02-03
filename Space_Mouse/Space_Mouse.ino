@@ -16,7 +16,8 @@ const int calibration = 50;	// adjust speed, lower value means faster movement
 int yOffset, xOffset;
 int yValue, xValue;
 bool swState, swStatePrev = HIGH;
-bool isPanning = true;
+int mode = 0;
+int numModes = 3;
 
 struct Encoder {
 	const uint8_t CLK;
@@ -101,23 +102,54 @@ void loop() {
 
 	swState = digitalRead(joy.SWpin);
 	if(swState == HIGH && swStatePrev == LOW) {
-		isPanning = !isPanning;		// toggle panning / orbiting
+		mode++;
+    if(mode > numModes)
+      mode = 0;
+    Serial.println(mode + '\n');
 	}
 	swStatePrev = swState;
 
- // if(!isPanning) Keyboard.press(KEY_LEFT_SHIFT);  
+ // if(!isPanning) Keyboard.press(MODIFIERKEY_SHIFT);  
   
 	if (xValue > THRESHOLD || xValue < -THRESHOLD) {
-		if(!isPanning) Keyboard.press(KEY_LEFT_SHIFT);	// orbiting
-		Mouse.press(MOUSE_MIDDLE);
-		Mouse.move(xValue/calibration, 0, 0);
+		if(mode < 2) {
+		  if(mode == 0) Keyboard.press(KEY_LEFT_SHIFT);
+      Mouse.press(MOUSE_MIDDLE);
+      Mouse.move(xValue/calibration, 0, 0);
+		}
+		else if(mode == 2) {
+      if(xValue > 0) Keyboard.press(KEY_RIGHT_ARROW);
+      else Keyboard.press(KEY_LEFT_ARROW);
+		}
+    else if(mode == 3) {
+      if(xValue > 0) Keyboard.write('d');
+      else Keyboard.press('a');
+    }
 	}
 
+  if (yValue > THRESHOLD || yValue < -THRESHOLD) {
+    if(mode < 2) {
+      if(mode == 0) Keyboard.press(KEY_LEFT_SHIFT);
+      Mouse.press(MOUSE_MIDDLE);
+      Mouse.move(0, yValue/calibration, 0);
+    }
+    else if(mode == 2) {
+      if(yValue > 0) Keyboard.press(KEY_DOWN_ARROW);
+      else Keyboard.press(KEY_UP_ARROW);
+    }
+    else if(mode == 3) {
+      if(yValue > 0) Keyboard.press('s');
+      else Keyboard.press('w');
+    }
+  }
+  
+/*
 	if (yValue > THRESHOLD || yValue < -THRESHOLD) {
-		if(!isPanning) Keyboard.press(KEY_LEFT_SHIFT);
+		if(!isPanning) Keyboard.press(MODIFIERKEY_SHIFT);
 		Mouse.press(MOUSE_MIDDLE);
 		Mouse.move(0, yValue/calibration, 0);
 	}
+*/
 
 	if (yValue <= THRESHOLD && yValue >= -THRESHOLD &&
 		 xValue <= THRESHOLD && xValue >= -THRESHOLD) {
