@@ -122,7 +122,7 @@ void loop() {
       else Keyboard.press(KEY_LEFT_ARROW);
 		}
     else if(mode == 3) {
-      if(xValue > 0) Keyboard.write('d');
+      if(xValue > 0) Keyboard.press('d');
       else Keyboard.press('a');
     }
 	}
