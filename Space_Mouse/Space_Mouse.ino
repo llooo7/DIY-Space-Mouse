@@ -1,4 +1,4 @@
-#include <Mouse.h>
+#include <Mouse.h>  
 #include <Keyboard.h>
 
 struct Joystick {
@@ -11,12 +11,12 @@ struct Joystick {
 
 Joystick joy = {15, A3, A2, A1, A0}; // VCC is throwaway, it's connected directly to VCC PIN
 
-const int calibration = 220;	// adjust speed, lower value means faster movement
-#define THRESHOLD 5
+const int calibration = 50;	// adjust speed, lower value means faster movement
+#define THRESHOLD 1
 int yOffset, xOffset;
 int yValue, xValue;
 bool swState, swStatePrev = HIGH;
-bool isPanning = false;
+bool isPanning = true;
 
 struct Encoder {
 	const uint8_t CLK;
@@ -36,7 +36,7 @@ void encoder_scroll() {
 	if (currentStateCLK != lastStateCLK  && currentStateCLK == HIGH){
 		if (digitalRead(enc.DT) != currentStateCLK) {
 			Serial.println("scroll up");
-			Mouse.move(0, 0, 1);
+      Mouse.move(0, 0, 1);
 		}
 		else {
 			Serial.println("scroll down");
@@ -54,8 +54,8 @@ void encoder_click() {
 }
 
 void setup() {
-//	Serial.begin(115200);
-//	Serial.println();
+	Serial.begin(115200);
+	Serial.println();
 
 	// put your setup code here, to run once:
 	pinMode(joy.VCCpin, OUTPUT);
@@ -86,6 +86,7 @@ void setup() {
 
 	Mouse.begin();
 	Keyboard.begin();
+  Serial.begin(9600);
 }
 
 void loop() {
@@ -100,11 +101,12 @@ void loop() {
 
 	swState = digitalRead(joy.SWpin);
 	if(swState == HIGH && swStatePrev == LOW) {
-		Serial.println("joystick click");
 		isPanning = !isPanning;		// toggle panning / orbiting
 	}
 	swStatePrev = swState;
 
+ // if(!isPanning) Keyboard.press(KEY_LEFT_SHIFT);  
+  
 	if (xValue > THRESHOLD || xValue < -THRESHOLD) {
 		if(!isPanning) Keyboard.press(KEY_LEFT_SHIFT);	// orbiting
 		Mouse.press(MOUSE_MIDDLE);
