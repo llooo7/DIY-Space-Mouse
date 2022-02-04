@@ -1,5 +1,6 @@
 #include <Mouse.h>  
 #include <Keyboard.h>
+#include "Joystick.h"
 
 struct Joystick {
 	const uint8_t VCCpin;
@@ -17,7 +18,9 @@ int yOffset, xOffset;
 int yValue, xValue;
 bool swState, swStatePrev = HIGH;
 int mode = 0;
-int numModes = 3;
+int numModes = 4;
+
+Joystick_ Joystick;
 
 struct Encoder {
 	const uint8_t CLK;
@@ -88,6 +91,7 @@ void setup() {
 	Mouse.begin();
 	Keyboard.begin();
   Serial.begin(9600);
+  Joystick.begin();
 }
 
 void loop() {
@@ -95,22 +99,26 @@ void loop() {
 	yValue = analogRead(joy.Ypin) - yOffset;
 	xValue = analogRead(joy.Xpin) - xOffset;
 
-//	Serial.println(digitalRead(joy.SWpin));
-//	Serial.print(xValue);
-//	Serial.print(",");
-//	Serial.println(yValue);
-
 	swState = digitalRead(joy.SWpin);
 	if(swState == HIGH && swStatePrev == LOW) {
 		mode++;
     if(mode > numModes)
       mode = 0;
-    Serial.println(mode + '\n');
+   // Serial.println(mode + '\n');
 	}
 	swStatePrev = swState;
 
  // if(!isPanning) Keyboard.press(MODIFIERKEY_SHIFT);  
-  
+
+  if(yValue < 0) {
+    yValue *= 2;
+  }
+/*
+  Serial.println(digitalRead(joy.SWpin));
+  Serial.print(xValue);
+  Serial.print(",");
+  Serial.println(yValue);
+ */ 
 	if (xValue > THRESHOLD || xValue < -THRESHOLD) {
 		if(mode < 2) {
 		  if(mode == 0) Keyboard.press(KEY_LEFT_SHIFT);
@@ -124,6 +132,9 @@ void loop() {
     else if(mode == 3) {
       if(xValue > 0) Keyboard.press('d');
       else Keyboard.press('a');
+    }
+    else if(mode == 4)  {
+      Joystick.setXAxis(xValue+600);
     }
 	}
 
@@ -140,6 +151,9 @@ void loop() {
     else if(mode == 3) {
       if(yValue > 0) Keyboard.press('s');
       else Keyboard.press('w');
+    }
+    else if(mode == 4)  {
+       Joystick.setYAxis(yValue+600);
     }
   }
   
