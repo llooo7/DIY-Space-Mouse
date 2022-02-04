@@ -110,7 +110,7 @@ void loop() {
 
  // if(!isPanning) Keyboard.press(MODIFIERKEY_SHIFT);  
 
-  if(yValue < 0) {
+  if(yValue < -2) {
     yValue *= 2;
   }
 /*
