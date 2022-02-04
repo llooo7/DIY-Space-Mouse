@@ -12,13 +12,13 @@ struct Joystick {
 
 Joystick joy = {15, A3, A2, A1, A0}; // VCC is throwaway, it's connected directly to VCC PIN
 
-const int calibration = 50;	// adjust speed, lower value means faster movement
+const int calibration = 100;	// adjust speed, lower value means faster movement
 #define THRESHOLD 1
 int yOffset, xOffset;
 int yValue, xValue;
 bool swState, swStatePrev = HIGH;
 int mode = 0;
-int numModes = 4;
+int numModes = 1;
 
 Joystick_ Joystick;
 
@@ -122,6 +122,7 @@ void loop() {
 	if (xValue > THRESHOLD || xValue < -THRESHOLD) {
 		if(mode < 2) {
 		  if(mode == 0) Keyboard.press(KEY_LEFT_SHIFT);
+      delay(5);
       Mouse.press(MOUSE_MIDDLE);
       Mouse.move(xValue/calibration, 0, 0);
 		}
@@ -141,6 +142,7 @@ void loop() {
   if (yValue > THRESHOLD || yValue < -THRESHOLD) {
     if(mode < 2) {
       if(mode == 0) Keyboard.press(KEY_LEFT_SHIFT);
+      delay(5);
       Mouse.press(MOUSE_MIDDLE);
       Mouse.move(0, yValue/calibration, 0);
     }
