@@ -110,15 +110,15 @@ void loop() {
 
  // if(!isPanning) Keyboard.press(MODIFIERKEY_SHIFT);  
 
-  if(yValue < -2) {
+  if(yValue < -THRESHOLD) {
     yValue *= 2;
   }
-/*
+
   Serial.println(digitalRead(joy.SWpin));
   Serial.print(xValue);
   Serial.print(",");
   Serial.println(yValue);
- */ 
+  
 	if (xValue > THRESHOLD || xValue < -THRESHOLD) {
 		if(mode < 2) {
 		  if(mode == 0) Keyboard.press(KEY_LEFT_SHIFT);
